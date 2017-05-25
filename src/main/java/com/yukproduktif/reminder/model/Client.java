@@ -23,7 +23,7 @@ public class Client {
 		this.id = id;
 	}
 	
-	@Column(name = "client_callback", nullable = false)
+	@Column(name = "client_callback", unique = true, nullable = false)
 	public String getCallback() {
 		return callback;
 	}
