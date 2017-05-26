@@ -16,8 +16,8 @@ protected Logger logger = Logger.getLogger(CronController.class.getName());
 	@Autowired
 	ClientRepository clientRepo;
 	
-	@Scheduled(cron = "*/1 * * * * *")
-	void cron() {
+	@Scheduled(cron = "*/1 * * * * *", zone = "Asia/Jakarta")
+	private void cron() {
 		for (int i = 1; i <= clientRepo.count(); i++) {
 			logger.info("Token: "+clientRepo.findOne(i).getAccessToken());
 		}
