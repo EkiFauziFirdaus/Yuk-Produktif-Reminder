@@ -16,18 +16,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.yukproduktif.reminder.model.Prayer;
 import com.yukproduktif.reminder.repository.PrayerRepository;
 
 @Component
 public class PrayerService {
 	
-	private static final String CRON_TIME = "0 */1 * * * *";
-	private String data = "{\"Shubuh\" : \"00:01\", \"Dzuhur\" : \"00:02\", \"Ashar\" : \"00:03\", \"Magrib\" : \"00:04\", \"Isya\" : \"00:05\" }";
+	private static final String CRON_TIME = "0 0 0 * * *";
+	private static final String LOCATION = "bandung";
+	private static final String TRIGGER_TIME = "0 55 23 * * *";
+	private static final String URL = "https://adzanservice.herokuapp.com/";
 	protected Logger logger = Logger.getLogger(PrayerService.class.getName());
 	
 	@Autowired
 	PrayerRepository prayerRepo;
+	
+	private Calendar getCalendar() {
+		TimeZone timeZone = TimeZone.getTimeZone("Asia/Jakarta");
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTimeZone(timeZone);
+		
+		return calendar;
+	}
+	
+	private int getDay(Calendar calendar) {
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+	
+	private int getMonth(Calendar calendar) {
+		return calendar.get(Calendar.MONTH) + 1;
+	}
+	
+	private int getYear(Calendar calendar) {
+		return calendar.get(Calendar.YEAR);
+	}
 	
 	private String getPrayer(JSONObject json, String prayerName) throws JSONException {
 		return json.getString(prayerName);
@@ -51,24 +75,9 @@ public class PrayerService {
 		}
 	}
 	
-	private Calendar getCalendar() {
-		TimeZone timeZone = TimeZone.getTimeZone("Asia/Jakarta");
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTimeZone(timeZone);
-		
-		return calendar;
-	}
-	
-	private int getDay(Calendar calendar) {
-		return calendar.get(Calendar.DAY_OF_MONTH);
-	}
-	
-	private int getMonth(Calendar calendar) {
-		return calendar.get(Calendar.MONTH) + 1;
-	}
-	
-	private int getYear(Calendar calendar) {
-		return calendar.get(Calendar.YEAR);
+	@Scheduled(cron = TRIGGER_TIME, zone = "Asia/Jakarta")
+	private void triggerPrayerAPI() {
+		Unirest.get(URL);
 	}
 	
 	@Scheduled(cron = CRON_TIME, zone = "Asia/Jakarta")
@@ -78,10 +87,15 @@ public class PrayerService {
 			int date = getDay(systemDate);
 			int month = getMonth(systemDate);
 			int year = getYear(systemDate);
-			logger.info("Tanggal="+date+" Bulan="+month +" Tahun="+year);
-			JSONObject json = new JSONObject(data);
+			String prayerServiceUrl = URL + 
+					"get_adzan?" +
+					"tanggal=" + date + 
+					"&&bulan=" + month + 
+					"&&tahun=" + year + 
+					"&&lokasi=" + LOCATION;
+			JSONObject json = Unirest.get(prayerServiceUrl).asJson().getBody().getObject();
 			saveData(json);
-		} catch (JSONException e) {
+		} catch (UnirestException e) {
 			e.printStackTrace();
 		}
 	}
