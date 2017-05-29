@@ -22,7 +22,7 @@ import com.yukproduktif.reminder.repository.PrayerRepository;
 @Component
 public class PrayerService {
 	
-	private static final String CRON_TIME = " */1 * * * *";
+	private static final String CRON_TIME = "0 */1 * * * *";
 	private String data = "{\"Shubuh\" : \"00:01\", \"Dzuhur\" : \"00:02\", \"Ashar\" : \"00:03\", \"Magrib\" : \"00:04\", \"Isya\" : \"00:05\" }";
 	protected Logger logger = Logger.getLogger(PrayerService.class.getName());
 	
