@@ -34,7 +34,7 @@ public class PrayerService {
 	}
 	
 	private void saveData(JSONObject json) {
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		List<Prayer> prayers = new ArrayList<Prayer>();
 		try {
 			prayers.add(new Prayer(1, "Shubuh",new Time(format.parse(getPrayer(json, "Shubuh")).getTime())));
