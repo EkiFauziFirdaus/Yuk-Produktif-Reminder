@@ -22,6 +22,7 @@ import com.yukproduktif.reminder.repository.PrayerRepository;
 @Component
 public class PrayerService {
 	
+	private static final String CRON_TIME = " 1 * * * *";
 	private String data = "{\"Shubuh\" : \"00:01\", \"Dzuhur\" : \"00:02\", \"Ashar\" : \"00:03\", \"Magrib\" : \"00:04\", \"Isya\" : \"00:05\" }";
 	protected Logger logger = Logger.getLogger(PrayerService.class.getName());
 	
@@ -70,7 +71,7 @@ public class PrayerService {
 		return calendar.get(Calendar.YEAR);
 	}
 	
-	@Scheduled(cron = "*/1 * * * * *", zone = "Asia/Jakarta")
+	@Scheduled(cron = CRON_TIME, zone = "Asia/Jakarta")
 	private void getPrayerData() {
 		try {
 			Calendar systemDate = getCalendar();
