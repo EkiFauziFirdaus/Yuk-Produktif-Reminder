@@ -97,5 +97,24 @@ public class CronController {
 			}
 			prayerId = setPrayerId(prayerId);
 		}
+		/*DEBUG PURPOSE*/
+		/*
+		Prayer prayer = prayerRepo.findOne(prayerId);
+		for (int i = 1; i <= clientRepo.count(); i++) {
+			Client client = clientRepo.findOne(i);
+			try {
+				JSONObject json = Unirest.post(PREFIX_URL + client.getCallback())
+						.body(generatebody(client, prayer))
+						.asJson()
+						.getBody()
+						.getObject();
+				logger.info(json.toString());
+			} catch (UnirestException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		*/
 	}
 }
