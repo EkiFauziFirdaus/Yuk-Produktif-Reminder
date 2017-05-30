@@ -63,11 +63,11 @@ public class CronController {
 	
 	private JSONObject generatebody(Client client, Prayer prayer) throws JSONException {
 		JSONObject prayerData = new JSONObject();
-		prayerData.put("Name", prayer.getName());
-		prayerData.put("Time", prayer.getTime());
+		prayerData.put("name", prayer.getName());
+		prayerData.put("time", prayer.getTime());
 		JSONObject body = new JSONObject();
-		body.put("Token", client.getAccessToken());
-		body.put("Reminder", prayerData);
+		body.put("token", client.getAccessToken());
+		body.put("reminder", prayerData);
 		
 		return body;
 	}
