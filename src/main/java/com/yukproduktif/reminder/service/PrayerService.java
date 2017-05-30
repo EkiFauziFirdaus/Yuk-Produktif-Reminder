@@ -88,11 +88,11 @@ public class PrayerService {
 			int month = getMonth(systemDate);
 			int year = getYear(systemDate);
 			String prayerServiceUrl = URL + 
-					"get_adzan?" +
-					"tanggal=" + date + 
-					"&&bulan=" + month + 
-					"&&tahun=" + year + 
-					"&&lokasi=" + LOCATION;
+					"get_adzan" +
+					"/" + date + 
+					"/" + month + 
+					"/" + year + 
+					"/" + LOCATION;
 			JSONObject json = Unirest.get(prayerServiceUrl).asJson().getBody().getObject();
 			saveData(json);
 		} catch (UnirestException e) {
