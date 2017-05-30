@@ -26,7 +26,7 @@ public class PrayerService {
 	
 	private static final String CRON_TIME = "0 0 0 * * *";
 	private static final String LOCATION = "bandung";
-	private static final String TRIGGER_TIME = "0 55 23 * * *";
+	private static final String TRIGGER_TIME = "0 25 * * * *";
 	private static final String URL = "https://adzanservice.herokuapp.com/";
 	protected Logger logger = Logger.getLogger(PrayerService.class.getName());
 	
