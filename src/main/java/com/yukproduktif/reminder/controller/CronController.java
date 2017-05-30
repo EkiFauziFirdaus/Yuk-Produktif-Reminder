@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.yukproduktif.reminder.model.Client;
@@ -83,11 +85,10 @@ public class CronController {
 			for (int i = 1; i <= clientRepo.count(); i++) {
 				Client client = clientRepo.findOne(i);
 				try {
-					JSONObject json = Unirest.post(PREFIX_URL + client.getCallback())
+					HttpResponse<JsonNode> response = Unirest.post(PREFIX_URL + client.getCallback())
 							.body(generatebody(client, prayer))
-							.asJson()
-							.getBody()
-							.getObject();
+							.asJson();
+					JSONObject json = response.getBody().getObject();
 					logger.info(json.toString());
 				} catch (UnirestException e) {
 					e.printStackTrace();
