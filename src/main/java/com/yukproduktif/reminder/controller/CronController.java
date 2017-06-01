@@ -1,7 +1,9 @@
 package com.yukproduktif.reminder.controller;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
@@ -33,7 +35,9 @@ public class CronController {
 	
 	private static final String CRON_TIME = "0 */1 * * * *";
 	private static final String PREFIX_URL = "http://";
-	private int prayerId = 1;
+	private Boolean getCronTimeFromDB = false;
+	private int cronHour;
+	private int cronMinutes;
 	
 	private Calendar getCurrentTime() {
 		TimeZone timeZone = TimeZone.getTimeZone("Asia/Jakarta");
@@ -51,16 +55,12 @@ public class CronController {
 		return getCurrentTime().get(Calendar.MINUTE);
 	}
 	
-	private int getCronHours(int id) {
-		return prayerRepo.findOne(id).getTime().getHours();
+	private int getCronHours() {
+		return prayerRepo.findByStatus(false).getTime().getHours();
 	}
 	
-	private int getCronMinutes(int id) {
-		return prayerRepo.findOne(id).getTime().getMinutes();
-	}
-	
-	private int setPrayerId(int id) {
-		return (id % (int)prayerRepo.count()) + 1;
+	private int getCronMinutes() {
+		return prayerRepo.findByStatus(false).getTime().getMinutes();
 	}
 	
 	private JSONObject generatebody(Client client, Prayer prayer) throws JSONException {
@@ -74,14 +74,35 @@ public class CronController {
 		return body;
 	}
 	
+	private void getCrontime() {
+		if (getCronTimeFromDB == false) {
+			cronHour = getCronHours();
+			cronMinutes = getCronMinutes();
+			getCronTimeFromDB = true;
+		}
+	}
+	
+	private void setNextReminder(Prayer currentPrayer) {
+		currentPrayer.setStatus(true);
+		int id = (currentPrayer.getId() % (int)prayerRepo.count()) + 1;
+		Prayer nextPrayer = prayerRepo.findOne(id);
+		nextPrayer.setStatus(false);
+		List<Prayer> prayers = new ArrayList<Prayer>();
+		prayers.add(currentPrayer);
+		prayers.add(nextPrayer);
+		prayerRepo.save(prayers);
+		getCronTimeFromDB = false;
+	}
+	
 	@Scheduled(cron = CRON_TIME, zone = "Asia/Jakarta")
 	private void cron() {
 		int currentHour = getCurrentHours();
 		int currentMinutes = getCurrentMinutes();
-		int cronHour = getCronHours(prayerId);
-		int cronMinutes = getCronMinutes(prayerId);
+		getCrontime();
+		logger.info("Current Time= "+currentHour+":"+currentMinutes);
+		logger.info("Cron Time= "+cronHour+":"+cronMinutes);
 		if ((currentHour == cronHour) && (currentMinutes == cronMinutes)) {
-			Prayer prayer = prayerRepo.findOne(prayerId);
+			Prayer prayer = prayerRepo.findByStatus(false);
 			for (int i = 1; i <= clientRepo.count(); i++) {
 				Client client = clientRepo.findOne(i);
 				try {
@@ -96,25 +117,21 @@ public class CronController {
 					e.printStackTrace();
 				}
 			}
-			prayerId = setPrayerId(prayerId);
+			setNextReminder(prayer);
 		}
 		/*DEBUG PURPOSE*/
 		/*
-		Prayer prayer = prayerRepo.findOne(prayerId);
-		for (int i = 1; i <= clientRepo.count(); i++) {
-			Client client = clientRepo.findOne(i);
-			try {
-				JSONObject json = Unirest.post(PREFIX_URL + client.getCallback())
-						.body(generatebody(client, prayer))
-						.asJson()
-						.getBody()
-						.getObject();
-				logger.info(json.toString());
-			} catch (UnirestException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
+		if ((currentHour == cronHour) && (currentMinutes == cronMinutes)) {
+			Prayer prayer = prayerRepo.findByStatus(false);
+			for (int i = 1; i <= clientRepo.count(); i++) {
+				Client client = clientRepo.findOne(i);
+				try {
+					logger.info(generatebody(client, prayer).toString());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
+			setNextReminder(prayer);
 		}
 		*/
 	}
