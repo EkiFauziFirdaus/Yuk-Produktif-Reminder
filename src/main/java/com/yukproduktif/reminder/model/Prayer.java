@@ -14,6 +14,8 @@ public class Prayer {
 	private int id;
 	private String name;
 	private Time time;
+	private Boolean status;
+	private String type;
 	
 	@Id
 	@Column(name = "prayer_id", unique = true, nullable =  false)
@@ -43,13 +45,33 @@ public class Prayer {
 		this.time = time;
 	}
 	
+	@Column(name = "prayer_type", nullable = false)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@Column(name = "reminder_status", nullable = false)
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
 	public Prayer() {}
 
-	public Prayer(int id, String name, Time time) {
+	public Prayer(int id, String name, Time time, String type, Boolean status) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.time = time;
+		this.type = type;
+		this.status = status;
 	}
 	
 }
