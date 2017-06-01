@@ -61,11 +61,11 @@ public class PrayerService {
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		List<Prayer> prayers = new ArrayList<Prayer>();
 		try {
-			prayers.add(new Prayer(1, "Shubuh",new Time(format.parse(getPrayer(json, "Shubuh")).getTime())));
-			prayers.add(new Prayer(2, "Dzuhur",new Time(format.parse(getPrayer(json, "Dzuhur")).getTime())));
-			prayers.add(new Prayer(3, "Ashar",new Time(format.parse(getPrayer(json, "Ashar")).getTime())));
-			prayers.add(new Prayer(4, "Magrib",new Time(format.parse(getPrayer(json, "Magrib")).getTime())));
-			prayers.add(new Prayer(5, "Isya",new Time(format.parse(getPrayer(json, "Isya")).getTime())));
+			prayers.add(new Prayer(1, "shubuh", new Time(format.parse(getPrayer(json, "shubuh")).getTime()), "fardh", false));
+			prayers.add(new Prayer(2, "dzuhur", new Time(format.parse(getPrayer(json, "dzuhur")).getTime()), "fardh", true));
+			prayers.add(new Prayer(3, "ashar", new Time(format.parse(getPrayer(json, "ashar")).getTime()), "fardh", true));
+			prayers.add(new Prayer(4, "magrib", new Time(format.parse(getPrayer(json, "magrib")).getTime()), "fardh", true));
+			prayers.add(new Prayer(5, "isya", new Time(format.parse(getPrayer(json, "isya")).getTime()), "fardh", true));
 			prayerRepo.save(prayers);
 			logger.info("Data saved.");
 		} catch (ParseException e) {
