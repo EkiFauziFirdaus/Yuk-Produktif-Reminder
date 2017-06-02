@@ -80,6 +80,9 @@ public class CronController {
 			cronMinutes = getCronMinutes();
 			getCronTimeFromDB = true;
 		}
+		if (getCurrentHours() == 0 && getCurrentMinutes() == 0) {
+			getCronTimeFromDB = false;
+		}
 	}
 	
 	private void setNextReminder(Prayer currentPrayer) {
