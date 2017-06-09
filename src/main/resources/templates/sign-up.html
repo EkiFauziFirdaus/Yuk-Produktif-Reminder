@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+	<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="layout :: site-head">
+	</head>
+	<body>
+		<header th:replace="layout :: site-header" />
+			<div class="container">
+				<div class="row">
+					<form class="form-horizontal" th:object="${client}" th:action="@{/save-client-data}" method="post">
+						<div class="form-group">
+		                	<div class="col-sm-10">
+		                    	<input type="hidden" th:field="*{id}"/>
+		                	</div>	
+		            	</div>
+		            	<div class="form-group">
+		                	<label class="col-sm-2 control-label">Callback URL:</label>
+		                	<div class="col-sm-10">
+		                		<div class="input-group">
+		                			<span class="input-group-addon">http://</span>
+		                			<input type="text" class="form-control" th:field="*{callback}"/>
+		                		</div>
+		                	</div>	
+		            	</div>
+		            	<div class="row">
+                			<button type="submit" class="btn btn-primary">Submit</button>
+            			</div>
+					</form>
+				</div>
+			</div>
+		<footer th:replace="layout :: site-footer" />
+	</body>
+</html>
