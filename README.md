@@ -1,4 +1,5 @@
 # Yuk Produktif Reminder App
+[![Build Status](https://travis-ci.org/EkiFauziFirdaus/Yuk-Produktif-Reminder.svg?branch=master)](https://travis-ci.org/EkiFauziFirdaus/Yuk-Produktif-Reminder)
 
 Aplikasi ini merupakan aplikasi pengingat waktu ibadah umat Islam yang dibuat oleh tim YukProduktif!. Sesuai dengan namanya, tugas dari aplikasi ini adalah mengingatkan aplikasi client sepuluh menit sebelum saatnya waktu ibadah. Dalam level teknis, Aplikasi ini akan melakukan method `POST` kepada setiap aplikasi client melalui `callback URL` yang tersimpan dalam database.
 
