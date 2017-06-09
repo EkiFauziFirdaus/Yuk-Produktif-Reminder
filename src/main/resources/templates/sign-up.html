@@ -15,7 +15,10 @@
 		            	<div class="form-group">
 		                	<label class="col-sm-2 control-label">Callback URL:</label>
 		                	<div class="col-sm-10">
-		                    	<input type="text" class="form-control" th:field="*{callback}"/>
+		                		<div class="input-group">
+		                			<span class="input-group-addon">http://</span>
+		                			<input type="text" class="form-control" th:field="*{callback}"/>
+		                		</div>
 		                	</div>	
 		            	</div>
 		            	<div class="row">
