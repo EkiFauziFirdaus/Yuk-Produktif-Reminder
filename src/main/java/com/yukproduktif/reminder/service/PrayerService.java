@@ -53,19 +53,25 @@ public class PrayerService {
 		return calendar.get(Calendar.YEAR);
 	}
 	
-	private String getPrayer(JSONObject json, String prayerName) throws JSONException {
-		return json.getString(prayerName);
+	private String getFardhPrayer(JSONObject json, String prayerName) throws JSONException {
+		return json.getJSONObject("wajib").getString(prayerName);
+	}
+	
+	private String getSunnahPrayer(JSONObject json, String prayerName) throws JSONException {
+		return json.getJSONObject("sunnah").getString(prayerName);
 	}
 	
 	private void saveData(JSONObject json) {
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 		List<Prayer> prayers = new ArrayList<Prayer>();
 		try {
-			prayers.add(new Prayer(1, "shubuh", new Time(format.parse(getPrayer(json, "shubuh")).getTime()), "fardh", false));
-			prayers.add(new Prayer(2, "dzuhur", new Time(format.parse(getPrayer(json, "dzuhur")).getTime()), "fardh", true));
-			prayers.add(new Prayer(3, "ashar", new Time(format.parse(getPrayer(json, "ashar")).getTime()), "fardh", true));
-			prayers.add(new Prayer(4, "magrib", new Time(format.parse(getPrayer(json, "magrib")).getTime()), "fardh", true));
-			prayers.add(new Prayer(5, "isya", new Time(format.parse(getPrayer(json, "isya")).getTime()), "fardh", true));
+			prayers.add(new Prayer(1, "tahajud", new Time(format.parse(getSunnahPrayer(json, "tahajud")).getTime()), "sunnah", false));
+			prayers.add(new Prayer(2, "shubuh", new Time(format.parse(getFardhPrayer(json, "shubuh")).getTime()), "fardh", true));
+			prayers.add(new Prayer(3, "dhuha", new Time(format.parse(getSunnahPrayer(json, "dhuha")).getTime()), "sunnah", true));
+			prayers.add(new Prayer(4, "dzuhur", new Time(format.parse(getFardhPrayer(json, "dzuhur")).getTime()), "fardh", true));
+			prayers.add(new Prayer(5, "ashar", new Time(format.parse(getFardhPrayer(json, "ashar")).getTime()), "fardh", true));
+			prayers.add(new Prayer(6, "magrib", new Time(format.parse(getFardhPrayer(json, "magrib")).getTime()), "fardh", true));
+			prayers.add(new Prayer(7, "isya", new Time(format.parse(getFardhPrayer(json, "isya")).getTime()), "fardh", true));
 			prayerRepo.save(prayers);
 			logger.info("Data saved.");
 		} catch (ParseException e) {
