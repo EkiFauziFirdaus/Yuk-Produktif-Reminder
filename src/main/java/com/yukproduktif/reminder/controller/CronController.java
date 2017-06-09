@@ -64,12 +64,19 @@ public class CronController {
 	}
 	
 	private JSONObject generatebody(Client client, Prayer prayer) throws JSONException {
-		JSONObject prayerData = new JSONObject();
-		prayerData.put("name", prayer.getName());
-		prayerData.put("time", prayer.getTime());
+		int currentMinutes = getCurrentMinutes();
 		JSONObject body = new JSONObject();
 		body.put("token", client.getAccessToken());
-		body.put("reminder", prayerData);
+		body.put("name", prayer.getName());
+		body.put("time", prayer.getTime());
+		if (prayer.getType() == "fardh") {
+			if (currentMinutes == cronMinutes) {
+				body.put("status", true);
+			} else {
+				body.put("status", false);
+			}
+		}
+		body.put("type", prayer.getType());
 		
 		return body;
 	}
@@ -99,28 +106,30 @@ public class CronController {
 	
 	@Scheduled(cron = CRON_TIME, zone = "Asia/Jakarta")
 	private void cron() {
-		int currentHour = getCurrentHours();
-		int currentMinutes = getCurrentMinutes();
-		getCrontime();
-		logger.info("Current Time= "+currentHour+":"+currentMinutes);
-		logger.info("Cron Time= "+cronHour+":"+cronMinutes);
-		if ((currentHour == cronHour) && (currentMinutes == cronMinutes)) {
-			Prayer prayer = prayerRepo.findByStatus(false);
-			for (int i = 1; i <= clientRepo.count(); i++) {
-				Client client = clientRepo.findOne(i);
-				try {
-					HttpResponse<JsonNode> response = Unirest.post(PREFIX_URL + client.getCallback())
-							.body(generatebody(client, prayer))
-							.asJson();
-					JSONObject json = response.getBody().getObject();
-					logger.info(json.toString());
-				} catch (UnirestException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
+		if (prayerRepo.count() != 0){
+			int currentHour = getCurrentHours();
+			int currentMinutes = getCurrentMinutes();
+			getCrontime();
+			logger.info("Current Time= "+currentHour+":"+currentMinutes);
+			logger.info("Cron Time= "+cronHour+":"+cronMinutes);
+			if ((currentHour == cronHour) && ((currentMinutes == cronMinutes) || (currentMinutes == cronMinutes-10))) {
+				Prayer prayer = prayerRepo.findByStatus(false);
+				for (int i = 1; i <= clientRepo.count(); i++) {
+					Client client = clientRepo.findOne(i);
+					try {
+						HttpResponse<JsonNode> response = Unirest.post(PREFIX_URL + client.getCallback())
+								.body(generatebody(client, prayer))
+								.asJson();
+						JSONObject json = response.getBody().getObject();
+						logger.info(json.toString());
+					} catch (UnirestException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
 				}
+				setNextReminder(prayer);
 			}
-			setNextReminder(prayer);
 		}
 		/*DEBUG PURPOSE*/
 		/*
