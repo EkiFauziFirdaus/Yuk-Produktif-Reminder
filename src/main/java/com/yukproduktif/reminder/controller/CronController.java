@@ -176,20 +176,5 @@ public class CronController {
 				}
 			}
 		}
-		/*DEBUG PURPOSE*/
-		/*
-		if ((currentHour == cronHour) && (currentMinutes == cronMinutes)) {
-			Prayer prayer = prayerRepo.findByStatus(false);
-			for (int i = 1; i <= clientRepo.count(); i++) {
-				Client client = clientRepo.findOne(i);
-				try {
-					logger.info(generatebody(client, prayer).toString());
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-			setNextReminder(prayer);
-		}
-		*/
 	}
 }
