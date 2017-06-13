@@ -13,4 +13,5 @@ deploy:
   provider: azure_web_apps
   skip_cleanup: true
   file: "Yuk-Produktif-Reminder.jar"
-  on: master
+  on:
+    branch: master
