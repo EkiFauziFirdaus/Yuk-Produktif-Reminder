@@ -24,7 +24,7 @@ import com.yukproduktif.reminder.repository.PrayerRepository;
 @Component
 public class PrayerService {
 	
-	private static final String CRON_TIME = "0 0 0 * * *";
+	private static final String CRON_TIME = "0 5 * * *";
 	private static final String LOCATION = "bandung";
 	private static final String TRIGGER_TIME = "0 25 * * * *";
 	private static final String URL = "https://adzanservice.herokuapp.com/";
