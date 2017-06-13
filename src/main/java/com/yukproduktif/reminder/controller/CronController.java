@@ -38,6 +38,7 @@ public class CronController {
 	private Boolean getCronTimeFromDB = false;
 	private int cronHour;
 	private int cronMinutes;
+	private String prayerType;
 	
 	private Calendar getCurrentTime() {
 		TimeZone timeZone = TimeZone.getTimeZone("Asia/Jakarta");
@@ -69,7 +70,7 @@ public class CronController {
 		body.put("token", client.getAccessToken());
 		body.put("name", prayer.getName());
 		body.put("time", prayer.getTime());
-		if (prayer.getType() == "fardh") {
+		if (prayer.getType().equals("fardh")) {
 			if (currentMinutes == cronMinutes) {
 				body.put("status", true);
 			} else {
@@ -85,6 +86,7 @@ public class CronController {
 		if (getCronTimeFromDB == false) {
 			cronHour = getCronHours();
 			cronMinutes = getCronMinutes();
+			prayerType = prayerRepo.findByStatus(false).getType();
 			getCronTimeFromDB = true;
 		}
 		if (getCurrentHours() == 0 && getCurrentMinutes() == 0) {
@@ -104,6 +106,37 @@ public class CronController {
 		getCronTimeFromDB = false;
 	}
 	
+	private Calendar setTime(int hour, int minutes) {
+		Calendar calendar = new GregorianCalendar();
+		calendar.set(0, 0, 0, hour, minutes, 0);
+		
+		return calendar;
+	}
+	
+	private  Boolean isCronTime(int currentHour, int currentMinutes, int cronHour, int cronMinutes, String prayerType) {
+		Boolean status = false;
+		Calendar cronTime = setTime(cronHour, cronMinutes);
+		Calendar preCronTime = setTime(cronHour, cronMinutes);
+		preCronTime.add(Calendar.MINUTE, -10);
+		Calendar currentTime = setTime(currentHour, currentMinutes);
+		if (prayerType.equals("fardh")) {
+			if (((currentTime.get(Calendar.HOUR_OF_DAY) == preCronTime.get(Calendar.HOUR_OF_DAY)) 
+					&& (currentTime.get(Calendar.MINUTE) == preCronTime.get(Calendar.MINUTE))) 
+					|| ((currentTime.get(Calendar.HOUR_OF_DAY) == cronTime.get(Calendar.HOUR_OF_DAY)) 
+							&& (currentTime.get(Calendar.MINUTE) == cronTime.get(Calendar.MINUTE)))) {
+				status = true;
+			}
+		} else {
+			if ((currentTime.get(Calendar.HOUR_OF_DAY) == cronTime.get(Calendar.HOUR_OF_DAY))
+					&& (currentTime.get(Calendar.MINUTE) == cronTime.get(Calendar.MINUTE))) {
+				status = true;
+			}
+		}
+		
+		
+		return status;
+	}
+	
 	@Scheduled(cron = CRON_TIME, zone = "Asia/Jakarta")
 	private void cron() {
 		if (prayerRepo.count() != 0){
@@ -112,10 +145,20 @@ public class CronController {
 			getCrontime();
 			logger.info("Current Time= "+currentHour+":"+currentMinutes);
 			logger.info("Cron Time= "+cronHour+":"+cronMinutes);
-			if ((currentHour == cronHour) && ((currentMinutes == cronMinutes) || (currentMinutes == cronMinutes-10))) {
+			if (isCronTime(currentHour, currentMinutes, cronHour, cronMinutes, prayerType)) {
 				Prayer prayer = prayerRepo.findByStatus(false);
 				for (int i = 1; i <= clientRepo.count(); i++) {
+					
 					Client client = clientRepo.findOne(i);
+					/*
+					 * DEBUG PURPOSE
+					try {
+						logger.info(generatebody(client, prayer).toString(1));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					*/
 					try {
 						HttpResponse<JsonNode> response = Unirest.post(PREFIX_URL + client.getCallback())
 								.body(generatebody(client, prayer))
@@ -128,7 +171,9 @@ public class CronController {
 						e.printStackTrace();
 					}
 				}
-				setNextReminder(prayer);
+				if (currentMinutes == cronMinutes) {
+					setNextReminder(prayer);
+				}
 			}
 		}
 		/*DEBUG PURPOSE*/
