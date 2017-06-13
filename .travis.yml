@@ -8,3 +8,9 @@ install:
 
 script:
 - mvn test
+
+deploy:
+  provider: azure_web_apps
+  skip_cleanup: true
+  file: "Yuk-Produktif-Reminder.jar"
+  on: branch_bot_eki
