@@ -1,17 +1,12 @@
 language: java
-
 jdk:
 - oraclejdk8
-
 install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-
 script:
 - mvn test
-
 deploy:
-  provider: azure_web_apps
-  skip_cleanup: true
-  file: "Yuk-Produktif-Reminder.jar"
-  on:
-    branch: master
+  provider: heroku
+  app: yukproduktif-reminder
+  api_key:
+    secure: AXCFV4ETIWVYYAut6li0fLEoUGzik39okcQrZ8/yuX/W2+ojdw1y3r4MYgjG65pQE1dBZM5PFGcx90MDjNEYVdS2gKBVSIAyMX651uszojOpWtxEcqoShFFUs8wy7orkRtVfBI4OM8y1/gQImYj6owhuMk597do1RaCaoy/JmjtXd/IL5XEizVKgtY+1FJ7zr78ijIDcL0YC5bDoaw8xLf5yo9mG+coJRb8q6PhxABPsGaP1DbMTRmP6zC11Lpkuqs6s1d4xdpvxAVF0zNKSROedxfjpU3puCH/W2nGeuorwO60hgEFzmhOcS/HGoMRVRw6DhQq7YVoxQMj7yqbJIJursOTsbaCIichKE781mrJ26h9RrTbiIw/vC7yAopxsgk7hV7vrpzombtiJmOLnPwtSlEvOpOjy0iNdlhPP2ISpSVmgYOk62b+lVQqndLzN988NsZsbZmn9iSyb5bKfjx5mg8BKAAQTtTydTGLSA3lqmJCqu2fFZXGUi8s9YTjNzfxK6YXQ3zekivHrNNeO+F2SGTlRXXgaQJiCg36iCiGVULHaWQcV/uEoYmNxhrRdeoHjyGstmKMEXDCEX+JO8buj8WE12CJiWrOrMALwNxR+gjc2KMGcdDPXrmBNAlXjSqUZuyXrAf0HGbfzmSHZ8YBuRFexPyhIe+thB7RRj7M=
